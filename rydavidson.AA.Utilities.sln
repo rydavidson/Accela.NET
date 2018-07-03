@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rydavidson.AA.Utilities", "rydavidson.AA.Utilities\rydavidson.AA.Utilities.csproj", "{4C3CAB0A-5280-4571-85B4-AB9464C2BB49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rydavidson.Accela.Utilities", "rydavidson.AA.Utilities\rydavidson.Accela.Utilities.csproj", "{4C3CAB0A-5280-4571-85B4-AB9464C2BB49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D56C8415-F5CA-43ED-A88F-224F88AC5621}
+		SolutionGuid = {93E27F3A-8241-4CA1-90FE-A22EFEA6301B}
 	EndGlobalSection
 EndGlobal
