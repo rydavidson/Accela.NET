@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace rydavidson.AA.Utilities
+namespace rydavidson.Accela.Configuration.Models
 {
-    public class Class1
+    sealed class OracleConfig
     {
+        public OracleConfig()
+        {
+        }
     }
 }
