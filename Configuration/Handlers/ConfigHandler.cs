@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Security;
-using Accela.Utilities.AA.Models;
-using Accela.Utilities.Common;
+using rydavidson.Accela.Common;
+using rydavidson.Accela.Configuration.Common;
+using rydavidson.Accela.Configuration.IO;
+using rydavidson.Accela.Configuration.Models;
 
-namespace rydavidson.Accela.Utilities.Handlers
+namespace rydavidson.Accela.Configuration.Handlers
 {
     public class ConfigHandler
     {
@@ -18,26 +19,41 @@ namespace rydavidson.Accela.Utilities.Handlers
         public string CurrentVersion { get; set; }
         public Logger Log { get; set; }
 
-        public Action<string> MessageHandler; // provide external messaging
+        // provide external messaging
+
+        public Action<string> MessageHandler; 
         public Action<string> ErrorMessageHandler;
+
+        // private members
 
         private bool isMessageHandlerRegistered = false;
         private bool isErrorMessageHandlerRegistered = false;
+        private readonly CommonConfig Configs;
+        private ConfigWriter configWriter;
+        private ConfigReader configReader;
 
         #region constructors
 
-        public ConfigHandler(string _pathToConfigFile, string _component, string _version, string _instance)
+        public ConfigHandler(string _pathToConfigFile, string _component, string _version, string _instance, Logger _log)
         {
             //PathToConfigFile = _pathToConfigFile.Replace("\"","");
             PathToConfigFile = _pathToConfigFile;
             CurrentComponent = _component;
             CurrentVersion = _version;
             CurrentInstance = _instance;
+
+            configWriter = new ConfigWriter(PathToConfigFile);
+            configReader = new ConfigReader(PathToConfigFile);
+
+            Configs = CommonConfig.Instance;
+            Log = Configs.Log;
+            if (_log != null)
+                Log = _log;
         }
 
         #endregion
 
-        #region registration
+        #region register delegates
 
         public void RegisterMessageDelegate(Action<string> _messageHandler)
         {
@@ -49,11 +65,6 @@ namespace rydavidson.Accela.Utilities.Handlers
         {
             ErrorMessageHandler = _errorMessageHander;
             isErrorMessageHandlerRegistered = true;
-        }
-
-        public void RegisterLogger(Logger _logger)
-        {
-            Log = _logger;
         }
 
         #endregion
@@ -76,34 +87,49 @@ namespace rydavidson.Accela.Utilities.Handlers
 
         #region readers
 
+        public MSSQLConfig ReadConfigFromFile()
+        {
+
+
+            return null;
+        }
+
+        //public OracleConfig ReadConfigFromFile()
+        //{
+
+        //}
+
 
 
         #endregion
 
         #region writers
 
-
-        public void WriteMSSQLConfigToFile(MSSQLConfig mssql)
+        public void WriteConfigToFile(MSSQLConfig mssql)
         {
+            if (!File.Exists(PathToConfigFile))
+            {
+                SendError("File not found: " + PathToConfigFile);
+                return;
+            }
 
             if (File.Exists(PathToConfigFile + ".backup"))
                 File.Delete(PathToConfigFile + ".backup");
 
             File.Copy(PathToConfigFile, PathToConfigFile + ".backup");
 
-            WriteValueToConfig("av.db.host", mssql.serverHostname);
-            WriteValueToConfig("av.jetspeed.db.host", mssql.serverHostname);
+            configWriter.WriteValueToConfig("av.db.host", mssql.avDBHost);
+            configWriter.WriteValueToConfig("av.jetspeed.db.host", mssql.avDBHost);
 
-            WriteValueToConfig("av.db.sid", mssql.avDatabaseName);
-            WriteValueToConfig("av.db.username", mssql.avDatabaseUser);
-            WriteValueToConfig("av.db.password", mssql.GetAVDatabasePassword());
+            configWriter.WriteValueToConfig("av.db.sid", mssql.avDBName);
+            configWriter.WriteValueToConfig("av.db.username", mssql.avUser);
+            configWriter.WriteValueToConfig("av.db.password", mssql.GetAVDatabasePassword());
 
-            WriteValueToConfig("av.jetspeed.db.sid", mssql.jetspeedDatabaseName);
-            WriteValueToConfig("av.jetspeed.db.username", mssql.jetspeedDatabaseUser);
-            WriteValueToConfig("av.jetspeed.db.password", mssql.GetJetspeedDatabasePassword());
+            configWriter.WriteValueToConfig("av.jetspeed.db.sid", mssql.avJetspeedDBName);
+            configWriter.WriteValueToConfig("av.jetspeed.db.username", mssql.avJetspeedUser);
+            configWriter.WriteValueToConfig("av.jetspeed.db.password", mssql.GetJetspeedDatabasePassword());
 
-            logger.LogToUI("Updated config successfully");
-
+            SendMessage("Updated config successfully");
         }
 
         #endregion

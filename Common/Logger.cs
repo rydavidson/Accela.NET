@@ -6,15 +6,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace rydavidson.Accela.Utilities.Common
+namespace rydavidson.Accela.Common
 {
     public class Logger
     {
         public string logFile { get; set; }
         public Boolean isVerbose { get; set; }
         public Boolean isDebug { get; set; }
+        public Type callingClass { get; set; }
+
+        public Boolean isEnabled { get; set; }
         
         StringBuilder log = new StringBuilder();
+
+        #region constructors
+
+        public Logger()
+        {
+            isEnabled = false;
+        }
+
+        //public Logger(Boolean _isEnabled) 
+        //{
+        //    isEnabled = _isEnabled;
+        //}
+
+        public Logger(Type _callingClass)
+        {
+            logFile = _callingClass.Name + ".log";
+        }
 
         public Logger(string _logFile)
         {
@@ -27,6 +47,9 @@ namespace rydavidson.Accela.Utilities.Common
             isDebug = _isDebug;
             isVerbose = _isVerbose;
         }
+
+        #endregion
+
 
         public void Log(string s)
         {
@@ -73,6 +96,15 @@ namespace rydavidson.Accela.Utilities.Common
 
         private void ProcessWrite(string text)
         {
+            if (!isEnabled)
+                return;
+
+            if (!File.Exists(logFile))
+                return;
+
+            if (callingClass != null)
+                text = callingClass.ToString() + " " + text;
+
             text = DateTime.Now.ToString() + text;
             File.AppendAllText(logFile, text);
         }
