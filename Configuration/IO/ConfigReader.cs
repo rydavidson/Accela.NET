@@ -9,24 +9,27 @@ using System.Threading.Tasks;
 
 namespace rydavidson.Accela.Configuration.IO
 {
-    class ConfigReader
+    public class ConfigReader
     {
         private string pathToConfigFile;
 
         public ConfigReader(string _pathToConfigFile)
         {
             pathToConfigFile = _pathToConfigFile;
-                
+
         }
-        public string FindValue(string key) // get a config value from a given key
+        public string FindValue(string _key) // get a config value from a given key
         {
-                string content = File.ReadAllText(pathToConfigFile, Encoding.Default);
-                int indexOfKey = content.IndexOf(key);
-                int indexEndOfValue = content.IndexOf(Environment.NewLine, indexOfKey);
-                int indexOfEquals = content.IndexOf("=", indexOfKey);
-                string value = content.Substring(indexOfEquals + 1, (indexEndOfValue - indexOfEquals) - 1);
-                return value;
+            string content = File.ReadAllText(pathToConfigFile, Encoding.Default);
+            int indexOfKey = content.IndexOf(_key);
+            if (indexOfKey == -1)
+                return "";
+            int indexEndOfValue = content.IndexOf(Environment.NewLine, indexOfKey);
+            int indexOfEquals = content.IndexOf("=", indexOfKey);
+            string value = content.Substring(indexOfEquals + 1, (indexEndOfValue - indexOfEquals) - 1);
+            return value;
         }
+       
 
         public Dictionary<string, string> FindValues(List<string> _keys)
         {
@@ -38,12 +41,20 @@ namespace rydavidson.Accela.Configuration.IO
             return configPairs;
         }
 
-        public MSSQLConfig ReadFromConfigFile()
+        public MssqlConfig ReadFromConfigFile()
         {
-            MSSQLConfig sql = new MSSQLConfig();
-
-            sql.avDBHost = FindValue("av.db.host");
-
+            MssqlConfig sql = new MssqlConfig
+            {
+                AvDbHost = FindValue("av.db.host"),
+                AvDbName = FindValue("av.db.sid"),
+                AvComponent = "av." + FindValue("av.server"),
+                AvJetspeedDbName = FindValue("av.jetspeed.db.sid"),
+                AvUser = FindValue("av.db.user"),
+                AvJetspeedUser = FindValue("av.jetspeed.db.user"),
+                Port = FindValue("av.db.port")
+            };
+            sql.SetAvDatabasePassword(FindValue("av.db.password"));
+            sql.SetJetspeedDatabasePassword(FindValue("av.jetspeed.db.password"));
             return sql;
         }
     }

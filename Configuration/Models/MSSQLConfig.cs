@@ -9,42 +9,42 @@ using rydavidson.Accela.Common;
 
 namespace rydavidson.Accela.Configuration.Models
 {
-    public sealed class MSSQLConfig
+    public sealed class MssqlConfig
     {
         #region properties
 
-        public string avDBHost { get; set; }
-        public string avDBName { get; set; }
-        public string avJetspeedDBName { get; set; }
-        public string avUser { get; set; }
-        public string avJetspeedUser { get; set; }
-        public string avComponent { get; set; }
-        public int port { get; set; }
-        private SecureString avDBPassword = new SecureString();
-        private SecureString avJetspeedDBPassword = new SecureString();
+        public string AvDbHost { get; set; }
+        public string AvDbName { get; set; }
+        public string AvJetspeedDbName { get; set; }
+        public string AvUser { get; set; }
+        public string AvJetspeedUser { get; set; }
+        public string AvComponent { get; set; }
+        public string Port { get; set; }
+        private SecureString avDbPassword = new SecureString();
+        private SecureString avJetspeedDbPassword = new SecureString();
 
         #endregion
 
         #region constructors
 
-        public MSSQLConfig() { }
+        public MssqlConfig() { }
 
-        public MSSQLConfig(string _serverHostName, string _avDatabaseName, string _jetspeedDatabaseName)
+        public MssqlConfig(string _serverHostName, string _avDatabaseName, string _jetspeedDatabaseName)
         {
-            avDBHost = _serverHostName;
-            avDBName = _avDatabaseName;
-            avJetspeedDBName = _jetspeedDatabaseName;
+            AvDbHost = _serverHostName;
+            AvDbName = _avDatabaseName;
+            AvJetspeedDbName = _jetspeedDatabaseName;
         }
 
-        public MSSQLConfig(string _serverHostName, string _avDatabaseName, string _jetspeedDatabaseName, string _avDatabaseUser, string _jetspeedDatabaseUser, 
+        public MssqlConfig(string _serverHostName, string _avDatabaseName, string _jetspeedDatabaseName, string _avDatabaseUser, string _jetspeedDatabaseUser, 
             SecureString _avDatabasePassword, SecureString _jetspeedDatabasePassword)
         {
-            avDBHost = _serverHostName;
-            avDBName = _avDatabaseName;
-            avJetspeedDBName = _jetspeedDatabaseName;
-            avUser = _avDatabaseUser;
-            avJetspeedUser = _jetspeedDatabaseUser;
-            SetAVDatabasePassword(_avDatabasePassword);
+            AvDbHost = _serverHostName;
+            AvDbName = _avDatabaseName;
+            AvJetspeedDbName = _jetspeedDatabaseName;
+            AvUser = _avDatabaseUser;
+            AvJetspeedUser = _jetspeedDatabaseUser;
+            SetAvDatabasePassword(_avDatabasePassword);
             SetJetspeedDatabasePassword(_jetspeedDatabasePassword);
         }
 
@@ -52,64 +52,64 @@ namespace rydavidson.Accela.Configuration.Models
 
         #region getters and setters
 
-        public void SetAVDatabasePassword(SecureString _password)
+        public void SetAvDatabasePassword(SecureString _password)
         {
             
-            if (avDBPassword.IsReadOnly())
+            if (avDbPassword.IsReadOnly())
             {
-                avDBPassword.Dispose();
-                avDBPassword = new SecureString();
-                avDBPassword = _password;
-                avDBPassword.MakeReadOnly();
+                avDbPassword.Dispose();
+                avDbPassword = new SecureString();
+                avDbPassword = _password;
+                avDbPassword.MakeReadOnly();
             }
             else
             {
-                avDBPassword.Clear();
-                avDBPassword = _password;
-                avDBPassword.MakeReadOnly();
+                avDbPassword.Clear();
+                avDbPassword = _password;
+                avDbPassword.MakeReadOnly();
             }
         }
 
         public void SetJetspeedDatabasePassword(SecureString _password)
         {
             
-            if (avJetspeedDBPassword.IsReadOnly())
+            if (avJetspeedDbPassword.IsReadOnly())
             {
-                avJetspeedDBPassword.Dispose();
-                avJetspeedDBPassword = new SecureString();
-                avJetspeedDBPassword = _password;
-                avJetspeedDBPassword.MakeReadOnly();
+                avJetspeedDbPassword.Dispose();
+                avJetspeedDbPassword = new SecureString();
+                avJetspeedDbPassword = _password;
+                avJetspeedDbPassword.MakeReadOnly();
             }
             else
             {
-                avJetspeedDBPassword.Clear();
-                avJetspeedDBPassword = _password;
-                avJetspeedDBPassword.MakeReadOnly();
+                avJetspeedDbPassword.Clear();
+                avJetspeedDbPassword = _password;
+                avJetspeedDbPassword.MakeReadOnly();
             }
 
         }
 
-        public void SetAVDatabasePassword(string _password)
+        public void SetAvDatabasePassword(string _password)
         {
             
-            if (avDBPassword.IsReadOnly())
+            if (avDbPassword.IsReadOnly())
             {
-                avDBPassword.Dispose();
-                avDBPassword = new SecureString();
+                avDbPassword.Dispose();
+                avDbPassword = new SecureString();
                 foreach (char c in _password)
                 {
-                    avDBPassword.AppendChar(c);
+                    avDbPassword.AppendChar(c);
                 }
-                avDBPassword.MakeReadOnly();
+                avDbPassword.MakeReadOnly();
             }
             else
             {
-                avDBPassword.Clear();
+                avDbPassword.Clear();
                 foreach (char c in _password)
                 {
-                    avDBPassword.AppendChar(c);
+                    avDbPassword.AppendChar(c);
                 }
-                avDBPassword.MakeReadOnly();
+                avDbPassword.MakeReadOnly();
             }
 
         }
@@ -117,51 +117,72 @@ namespace rydavidson.Accela.Configuration.Models
         public void SetJetspeedDatabasePassword(string _password)
         {
            
-            if (avJetspeedDBPassword.IsReadOnly())
+            if (avJetspeedDbPassword.IsReadOnly())
             {
-                avJetspeedDBPassword.Dispose();
-                avJetspeedDBPassword = new SecureString();
+                avJetspeedDbPassword.Dispose();
+                avJetspeedDbPassword = new SecureString();
                 foreach (char c in _password)
                 {
-                    avJetspeedDBPassword.AppendChar(c);
+                    avJetspeedDbPassword.AppendChar(c);
                 }
-                avJetspeedDBPassword.MakeReadOnly();
+                avJetspeedDbPassword.MakeReadOnly();
             }
             else
             {
-                avJetspeedDBPassword.Clear();
+                avJetspeedDbPassword.Clear();
                 foreach (char c in _password)
                 {
-                    avJetspeedDBPassword.AppendChar(c);
+                    avJetspeedDbPassword.AppendChar(c);
                 }
-                avJetspeedDBPassword.MakeReadOnly();
+                avJetspeedDbPassword.MakeReadOnly();
             }
 
         }
 
-        public string GetAVDatabasePassword()
+        public string GetAvDatabasePassword()
         {
-            return SecureUtils.SecureStringToString(avDBPassword);
+            return SecureUtils.SecureStringToString(avDbPassword);
         }
 
         public string GetJetspeedDatabasePassword()
         {
-            return SecureUtils.SecureStringToString(avJetspeedDBPassword);
+            return SecureUtils.SecureStringToString(avJetspeedDbPassword);
         }
 
-        public SecureString GetAVDatabasePasswordSecure()
+        public SecureString GetAvDatabasePasswordSecure()
         {
-            return avDBPassword;
+            return avDbPassword;
         }
 
         public SecureString GetJetspeedDatabasePasswordSecure()
         {
-            return avJetspeedDBPassword;
+            return avJetspeedDbPassword;
         }
 
 
 
         #endregion
 
+
+        public new string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("av.db.host: " + AvDbHost);
+            sb.AppendLine("av.db.sid: " + AvDbHost);
+            sb.AppendLine("av.db.username: " + AvDbHost);
+            sb.AppendLine("av.db.password: " + AvDbHost);
+            sb.AppendLine("av.db.port: " + AvDbHost);
+            
+            if(!string.IsNullOrWhiteSpace(AvJetspeedDbName))
+                sb.AppendLine("av.jetspeed.db.sid: " + AvJetspeedDbName);
+            if(!string.IsNullOrWhiteSpace(AvJetspeedUser))
+                sb.AppendLine("av.jetspeed.db.username: " + AvJetspeedUser);
+            if(!string.IsNullOrWhiteSpace(SecureUtils.SecureStringToString(avJetspeedDbPassword)))
+                sb.AppendLine("av.jetspeed.db.password: " + SecureUtils.SecureStringToString(avJetspeedDbPassword));
+            if(!string.IsNullOrWhiteSpace(AvJetspeedDbName))
+                sb.AppendLine("av.jetspeed.db.port: " + AvDbHost);
+            return sb.ToString();
+        }
     }
 }

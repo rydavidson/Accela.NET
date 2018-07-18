@@ -15,32 +15,32 @@ using System.Windows;
 
 namespace rydavidson.Accela.Configuration.Common
 {
-    public class AAUtil
+    public class AaUtil
     {
         private Logger logger;
         private ExceptionHandler exceptionHandler;
         private RegistryKey accelaBaseKey;
         private RegistryKey instanceKey;
-        private string AAInstallDir;
+        private string aaInstallDir;
 
         #region constructors
-        public AAUtil(string _logfile)
+        public AaUtil(string _logfile)
         {
             logger = new Logger(_logfile);
-            logger.isEnabled = true;
+            logger.IsEnabled = true;
             exceptionHandler = new ConfigurationExceptionHandler();
             exceptionHandler.SetLogger(logger);
         }
 
-        public AAUtil(Logger _logger)
+        public AaUtil(Logger _logger)
         {
             logger = _logger;
-            logger.isEnabled = true;
+            logger.IsEnabled = true;
             exceptionHandler = new ConfigurationExceptionHandler();
             exceptionHandler.SetLogger(logger);
         }
 
-        public AAUtil()
+        public AaUtil()
         {
             logger = new Logger();
             exceptionHandler = new ConfigurationExceptionHandler();
@@ -100,7 +100,7 @@ namespace rydavidson.Accela.Configuration.Common
 
         #endregion
 
-        public List<string> GetAAVersions()
+        public List<string> GetAaVersions()
         {
             //if(GetAccelaBaseKey() == null)
             //{
@@ -112,16 +112,16 @@ namespace rydavidson.Accela.Configuration.Common
             return new List<string>(GetAccelaBaseKey().OpenSubKey(@"AA Base Installer").GetSubKeyNames());
         }
 
-        public List<string> GetInstancesForVersion(string versionToCheck)
+        public List<string> GetInstancesForVersion(string _versionToCheck)
         {
             List<string> instances = new List<string>();
             try
             {
                 RegistryKey accelaBaseKey = GetAccelaBaseKey();
-                List<string> versions = GetAAVersions();
+                List<string> versions = GetAaVersions();
                 foreach (string version in versions)
                 {
-                    if (version.Trim() == versionToCheck.Trim())
+                    if (version.Trim() == _versionToCheck.Trim())
                     {
                         foreach (string instance in GetAccelaBaseKey().
                             OpenSubKey(@"AA Base Installer\" + version).GetSubKeyNames())
@@ -133,7 +133,7 @@ namespace rydavidson.Accela.Configuration.Common
             }
             catch (UnauthorizedAccessException uaex)
             {
-                exceptionHandler.HandleException(uaex, "Access Denied getting instances for version " + versionToCheck);
+                exceptionHandler.HandleException(uaex, "Access Denied getting instances for version " + _versionToCheck);
             }
             catch (Exception e)
             {
@@ -143,17 +143,17 @@ namespace rydavidson.Accela.Configuration.Common
             return instances;
         }
 
-        public string GetAAInstallDir(string version, string instance)
+        public string GetAaInstallDir(string _version, string _instance)
         {
-            if(AAInstallDir != null)
-                return AAInstallDir;
+            if(aaInstallDir != null)
+                return aaInstallDir;
             RegistryKey reg = GetAccelaBaseKey();
             string installDir = "";
-            if (reg != null && version != null && instance != null)
+            if (reg != null && _version != null && _instance != null)
             {
                 try
                 {
-                    instanceKey = reg.OpenSubKey(string.Format(@"AA Base Installer\{0}\{1}", version, instance), RegistryKeyPermissionCheck.ReadSubTree);
+                    instanceKey = reg.OpenSubKey(string.Format(@"AA Base Installer\{0}\{1}", _version, _instance), RegistryKeyPermissionCheck.ReadSubTree);
                     installDir = instanceKey.GetValue("InstallDir").ToString();
                 }
                 catch (Exception e)
@@ -162,10 +162,10 @@ namespace rydavidson.Accela.Configuration.Common
                 }
             }
             //if (installDir != "")
-            AAInstallDir = installDir;
-            return AAInstallDir;
+            aaInstallDir = installDir;
+            return aaInstallDir;
         }
-        public List<string> GetAAInstalledComponents(string _version, string _instance)
+        public List<string> GetAaInstalledComponents(string _version, string _instance)
         {
             RegistryKey reg = GetAccelaBaseKey();
             string components = GetInstanceKey(_version, _instance).GetValue("InstallComponents").ToString();
@@ -176,11 +176,11 @@ namespace rydavidson.Accela.Configuration.Common
             }
             return compList;
         }
-        public Dictionary<string, string> GetAAConfigFilePaths(string _version, string _instance)
+        public Dictionary<string, string> GetAaConfigFilePaths(string _version, string _instance)
         {
             Dictionary<string, string> paths = new Dictionary<string, string>();
-            List<string> components = GetAAInstalledComponents(_version, _instance);
-            string installDir = GetAAInstallDir(_version, _instance);
+            List<string> components = GetAaInstalledComponents(_version, _instance);
+            string installDir = GetAaInstallDir(_version, _instance);
 
             foreach (string comp in components)
             {

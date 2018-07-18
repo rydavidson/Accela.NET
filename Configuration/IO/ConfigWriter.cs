@@ -9,20 +9,20 @@ namespace rydavidson.Accela.Configuration.IO
 {
     class ConfigWriter
     {
-        private string PathToConfigFile;
+        private string pathToConfigFile;
 
         public ConfigWriter(string _path)
         {
-            PathToConfigFile = _path;
+            pathToConfigFile = _path;
         }
 
-        public void WriteValueToConfig(string key, string val)
+        public void WriteValueToConfig(string _key, string _val)
         {
-            if ((key == "av.db.host" || key == "av.jetspeed.db.host") && val.Contains(":"))
-                val = StripPortFromHost(key, val);
+            if ((_key == "av.db.host" || _key == "av.jetspeed.db.host") && _val.Contains(":"))
+                _val = StripPortFromHost(_key, _val);
 
-            string content = File.ReadAllText(PathToConfigFile, Encoding.Default); // read in the config file
-            int indexOfKey = content.IndexOf(key); // get the start of the config item
+            string content = File.ReadAllText(pathToConfigFile, Encoding.Default); // read in the config file
+            int indexOfKey = content.IndexOf(_key); // get the start of the config item
             if (indexOfKey == -1)
                 return; // exit if the config item isn't found
 
@@ -34,36 +34,36 @@ namespace rydavidson.Accela.Configuration.IO
             if (oldValue == "" || oldValue == null) // handle empty values
             {
                 if (oldConfigLine.Contains("="))
-                    newConfigLine = oldConfigLine + val; 
+                    newConfigLine = oldConfigLine + _val; 
                 if (!oldConfigLine.Contains("="))
-                    newConfigLine = oldConfigLine + "=" + val;
+                    newConfigLine = oldConfigLine + "=" + _val;
             }
             else
             {
-                newConfigLine = oldConfigLine.Replace(oldValue, val); // replace the old value in the line with the new value
+                newConfigLine = oldConfigLine.Replace(oldValue, _val); // replace the old value in the line with the new value
             }
 
             string newFile = content.Replace(oldConfigLine, newConfigLine);
 
-            File.WriteAllText(PathToConfigFile, newFile, Encoding.Default);
+            File.WriteAllText(pathToConfigFile, newFile, Encoding.Default);
 
         }
 
-        private string StripPortFromHost(string key, string hostWithPort)
+        private string StripPortFromHost(string _key, string _hostWithPort)
         {
-            string port = hostWithPort.Substring(hostWithPort.IndexOf(":") + 1, hostWithPort.Length - hostWithPort.IndexOf(":") - 1);
-            switch (key)
+            string port = _hostWithPort.Substring(_hostWithPort.IndexOf(":") + 1, _hostWithPort.Length - _hostWithPort.IndexOf(":") - 1);
+            switch (_key)
             {
                 case "av.db.host":
-                    new ConfigWriter(PathToConfigFile).WriteValueToConfig("av.db.port", port);
+                    new ConfigWriter(pathToConfigFile).WriteValueToConfig("av.db.port", port);
                     break;
                 case "av.jetspeed.db.host":
-                    new ConfigWriter(PathToConfigFile).WriteValueToConfig("av.jetspeed.db.port", port);
+                    new ConfigWriter(pathToConfigFile).WriteValueToConfig("av.jetspeed.db.port", port);
                     break;
                 default:
                     break;
             }
-            return hostWithPort.Remove(hostWithPort.IndexOf(":"));
+            return _hostWithPort.Remove(_hostWithPort.IndexOf(":"));
         }
     }
 }
