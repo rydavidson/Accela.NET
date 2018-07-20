@@ -9,9 +9,9 @@ namespace rydavidson.Accela.Common
 {
     public static class SecureUtils
     {
-        public static String SecureStringToString(SecureString value)
+        public static String SecureStringToString(SecureString _value)
         {
-            return new System.Net.NetworkCredential(string.Empty, value).Password;
+            return new System.Net.NetworkCredential(string.Empty, _value).Password;
         }
     }
 }

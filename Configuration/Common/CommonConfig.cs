@@ -10,7 +10,7 @@ namespace rydavidson.Accela.Configuration.Common
     public sealed class CommonConfig
     {
         private static CommonConfig instance = null;
-        private static readonly object o = new object();
+        private static readonly object O = new object();
 
         public string LogFile { get; set; }
         public Logger Log { get; }
@@ -23,7 +23,7 @@ namespace rydavidson.Accela.Configuration.Common
         {
             get
             {
-                lock (o)
+                lock (O)
                 {
                     if (instance == null)
                     {
@@ -36,7 +36,7 @@ namespace rydavidson.Accela.Configuration.Common
 
         public void UpdateLogger()
         {
-            Log.logFile = LogFile;
+            Log.LogFile = LogFile;
         }
 
     }

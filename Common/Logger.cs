@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,20 +11,20 @@ namespace rydavidson.Accela.Common
 {
     public class Logger
     {
-        public string logFile { get; set; }
-        public Boolean isVerbose { get; set; }
-        public Boolean isDebug { get; set; }
-        public Type callingClass { get; set; }
+        public string LogFile { get; set; }
+        public Boolean IsVerbose { get; set; }
+        public Boolean IsDebug { get; set; }
+        public Type CallingClass { get; set; }
 
-        public Boolean isEnabled { get; set; }
-        
-        StringBuilder log = new StringBuilder();
+        public Boolean IsEnabled { get; set; }
+
+        protected StringBuilder lb = new StringBuilder();
 
         #region constructors
 
         public Logger()
         {
-            isEnabled = false;
+            IsEnabled = false;
         }
 
         //public Logger(Boolean _isEnabled) 
@@ -33,83 +34,95 @@ namespace rydavidson.Accela.Common
 
         public Logger(Type _callingClass)
         {
-            logFile = _callingClass.Name + ".log";
+            LogFile = _callingClass.Name + ".log";
+#if DEBUG
+            IsEnabled = true;
+#else
+            IsEnabled = false;
+#endif
         }
 
         public Logger(string _logFile)
         {
-            logFile = _logFile;
+            LogFile = _logFile;
+#if DEBUG
+            IsEnabled = true;
+#else
+            IsEnabled = false;
+#endif
         }
 
         public Logger(string _logFile, Boolean _isDebug, Boolean _isVerbose)
         {
-            logFile = _logFile;
-            isDebug = _isDebug;
-            isVerbose = _isVerbose;
+            LogFile = _logFile;
+            IsDebug = _isDebug;
+            IsVerbose = _isVerbose;
+#if DEBUG
+            IsEnabled = true;
+#else
+            IsEnabled = false;
+#endif
         }
 
         #endregion
 
 
-        public void Log(string s)
+        public void Log(string _s)
         {
-            ProcessWrite(s + Environment.NewLine);
+            ProcessWrite(_s + Environment.NewLine);
         }
 
-        public void Info(string s)
+        public void Info(string _s)
         {
-            log.AppendLine(s);
-            ProcessWrite(" - INFO: " + log.ToString());
-            log.Clear();
-        }
-        public void Warn(string s)
-        {
-            log.AppendLine(s);
-            ProcessWrite(" - WARN: " + log.ToString());
-            log.Clear();
-        }
-        public void Error(string s)
-        {
-            log.AppendLine(s);
-            ProcessWrite(" - ERROR: " + log.ToString());
-            log.Clear();
-        }
-        public void Debug(string s)
-        {
-            if (isDebug)
-            {
-                log.AppendLine(s);
-                ProcessWrite(" - DEBUG: " + log.ToString());
-                log.Clear();
-            }
-        }
-        public void Trace(string s)
-        {
-            
-            if (isVerbose)
-            {
-                log.AppendLine(s);
-                ProcessWrite(" - TRACE: " + log.ToString());
-                log.Clear();
-            }
+            lb.AppendLine(_s);
+            ProcessWrite(" - INFO: " + lb);
+            lb.Clear();
         }
 
-        private void ProcessWrite(string text)
+        public void Warn(string _s)
         {
-            if (!isEnabled)
+            lb.AppendLine(_s);
+            ProcessWrite(" - WARN: " + lb);
+            lb.Clear();
+        }
+
+        public void Error(string _s)
+        {
+            lb.AppendLine(_s);
+            ProcessWrite(" - ERROR: " + lb);
+            lb.Clear();
+        }
+
+        public void Debug(string _s)
+        {
+            if (!IsDebug) return;
+            lb.AppendLine(_s);
+            ProcessWrite(" - DEBUG: " + lb);
+            lb.Clear();
+        }
+
+        public void Trace(string _s)
+        {
+            if (!IsVerbose) return;
+            lb.AppendLine(_s);
+            ProcessWrite(" - TRACE: " + lb);
+            lb.Clear();
+        }
+
+        private void ProcessWrite(string _text)
+        {
+            if (!IsEnabled)
                 return;
 
-            if (!File.Exists(logFile))
+            if (!File.Exists(LogFile))
                 return;
 
-            if (callingClass != null)
-                text = callingClass.ToString() + " " + text;
+            if (CallingClass != null)
+                _text = CallingClass + " " + _text;
 
-            text = DateTime.Now.ToString() + text;
-            File.AppendAllText(logFile, text);
+            _text = DateTime.Now.ToString(CultureInfo.InvariantCulture) + _text;
+            File.AppendAllText(LogFile, _text);
         }
-
-        // TODO Figure out why the async file writing sometimes causes log entries to not be written
 
         //Task ProcessWrite(string text)
         //{

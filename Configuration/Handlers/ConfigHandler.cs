@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using rydavidson.Accela.Common;
 using rydavidson.Accela.Configuration.Common;
@@ -28,7 +26,7 @@ namespace rydavidson.Accela.Configuration.Handlers
 
         private bool isMessageHandlerRegistered = false;
         private bool isErrorMessageHandlerRegistered = false;
-        private readonly CommonConfig Configs;
+        private readonly CommonConfig configs;
         private ConfigWriter configWriter;
         private ConfigReader configReader;
 
@@ -45,8 +43,8 @@ namespace rydavidson.Accela.Configuration.Handlers
             configWriter = new ConfigWriter(PathToConfigFile);
             configReader = new ConfigReader(PathToConfigFile);
 
-            Configs = CommonConfig.Instance;
-            Log = Configs.Log;
+            configs = CommonConfig.Instance;
+            Log = configs.Log;
             if (_log != null)
                 Log = _log;
         }
@@ -71,23 +69,23 @@ namespace rydavidson.Accela.Configuration.Handlers
 
         #region message senders
 
-        private void SendMessage(string message)
+        private void SendMessage(string _message)
         {
             if (isMessageHandlerRegistered)
-                MessageHandler(message);
+                MessageHandler(_message);
         }
 
-        private void SendError(string err)
+        private void SendError(string _err)
         {
             if (isErrorMessageHandlerRegistered)
-                ErrorMessageHandler(err);
+                ErrorMessageHandler(_err);
         }
 
         #endregion
 
         #region readers
 
-        public MSSQLConfig ReadConfigFromFile()
+        public MssqlConfig ReadConfigFromFile()
         {
 
 
@@ -105,7 +103,7 @@ namespace rydavidson.Accela.Configuration.Handlers
 
         #region writers
 
-        public void WriteConfigToFile(MSSQLConfig mssql)
+        public void WriteConfigToFile(MssqlConfig _mssql)
         {
             if (!File.Exists(PathToConfigFile))
             {
@@ -118,16 +116,16 @@ namespace rydavidson.Accela.Configuration.Handlers
 
             File.Copy(PathToConfigFile, PathToConfigFile + ".backup");
 
-            configWriter.WriteValueToConfig("av.db.host", mssql.avDBHost);
-            configWriter.WriteValueToConfig("av.jetspeed.db.host", mssql.avDBHost);
+            configWriter.WriteValueToConfig("av.db.host", _mssql.AvDbHost);
+            configWriter.WriteValueToConfig("av.jetspeed.db.host", _mssql.AvDbHost);
 
-            configWriter.WriteValueToConfig("av.db.sid", mssql.avDBName);
-            configWriter.WriteValueToConfig("av.db.username", mssql.avUser);
-            configWriter.WriteValueToConfig("av.db.password", mssql.GetAVDatabasePassword());
+            configWriter.WriteValueToConfig("av.db.sid", _mssql.AvDbName);
+            configWriter.WriteValueToConfig("av.db.username", _mssql.AvUser);
+            configWriter.WriteValueToConfig("av.db.password", _mssql.GetAvDatabasePassword());
 
-            configWriter.WriteValueToConfig("av.jetspeed.db.sid", mssql.avJetspeedDBName);
-            configWriter.WriteValueToConfig("av.jetspeed.db.username", mssql.avJetspeedUser);
-            configWriter.WriteValueToConfig("av.jetspeed.db.password", mssql.GetJetspeedDatabasePassword());
+            configWriter.WriteValueToConfig("av.jetspeed.db.sid", _mssql.AvJetspeedDbName);
+            configWriter.WriteValueToConfig("av.jetspeed.db.username", _mssql.AvJetspeedUser);
+            configWriter.WriteValueToConfig("av.jetspeed.db.password", _mssql.GetJetspeedDatabasePassword());
 
             SendMessage("Updated config successfully");
         }
