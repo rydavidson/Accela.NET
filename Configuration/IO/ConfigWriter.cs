@@ -28,7 +28,7 @@ namespace rydavidson.Accela.Configuration.IO
 
             int indexEndOfLine = content.IndexOf(Environment.NewLine, indexOfKey); // get the end of the config item
             int indexOfEquals = content.IndexOf("=", indexOfKey); // get the index of the equals sign after the config item
-            string oldValue = content.Substring(indexOfEquals + 1, (indexEndOfLine - indexOfEquals)).Trim(); // get the old value
+            string oldValue = indexOfEquals == -1 ? content.Substring(indexOfKey, indexEndOfLine - indexOfKey) : content.Substring(indexOfEquals + 1, (indexEndOfLine - indexOfEquals)).Trim();
             string oldConfigLine = content.Substring(indexOfKey, (indexEndOfLine - indexOfKey)); // get the entire line
             string newConfigLine = "";
             if (oldValue == "" || oldValue == null) // handle empty values
