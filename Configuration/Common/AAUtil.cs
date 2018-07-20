@@ -81,7 +81,7 @@ namespace rydavidson.Accela.Configuration.Common
         private RegistryKey GetInstanceKey(string _version, string _instance)
         {
 
-            if (instanceKey != null)
+            if ((instanceKey != null) && (instanceKey.GetValue("InstanceName") == _instance))
                 return instanceKey;
 
             RegistryKey reg = GetAccelaBaseKey();
