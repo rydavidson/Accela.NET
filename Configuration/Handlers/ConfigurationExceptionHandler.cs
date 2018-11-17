@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using rydavidson.Accela.Common;
+using rydavidson.Accela.Configuration.Common;
 
 namespace rydavidson.Accela.Configuration.Handlers
 {
-    class ConfigurationExceptionHandler : ExceptionHandler
+    public class ConfigurationExceptionHandler : ExceptionHandler
     {
 
     }

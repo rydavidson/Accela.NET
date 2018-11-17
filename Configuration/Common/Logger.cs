@@ -4,9 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace rydavidson.Accela.Common
+namespace rydavidson.Accela.Configuration.Common
 {
     public class Logger
     {
