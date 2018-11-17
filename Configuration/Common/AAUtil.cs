@@ -1,17 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.AccessControl;
-using System.Text;
-using rydavidson.Accela.Common;
 using rydavidson.Accela.Configuration.Handlers;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace rydavidson.Accela.Configuration.Common
 {
@@ -22,6 +13,7 @@ namespace rydavidson.Accela.Configuration.Common
         private RegistryKey accelaBaseKey;
         private RegistryKey instanceKey;
         private string aaInstallDir;
+        private bool isOverriddenInstallDir;
 
         #region constructors
         public AaUtil(string _logfile)
@@ -81,7 +73,7 @@ namespace rydavidson.Accela.Configuration.Common
         private RegistryKey GetInstanceKey(string _version, string _instance)
         {
 
-            if ((instanceKey != null) && (instanceKey.GetValue("InstanceName") == _instance))
+            if ((instanceKey != null) && ((string)instanceKey.GetValue("InstanceName") == _instance))
                 return instanceKey;
 
             RegistryKey reg = GetAccelaBaseKey();
@@ -147,6 +139,9 @@ namespace rydavidson.Accela.Configuration.Common
         {
             if(aaInstallDir != null)
                 return aaInstallDir;
+            if (isOverriddenInstallDir)
+                throw new Exception("The install directory is overridden but no install directory has been provided");
+
             RegistryKey reg = GetAccelaBaseKey();
             string installDir = "";
             if (reg != null && _version != null && _instance != null)
@@ -164,6 +159,19 @@ namespace rydavidson.Accela.Configuration.Common
             //if (installDir != "")
             aaInstallDir = installDir;
             return aaInstallDir;
+        }
+
+        public void SetAaInstallDir(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                aaInstallDir = path;
+                isOverriddenInstallDir = true;
+            }
+            else
+            {
+                throw new DirectoryNotFoundException($"The directory {path} was not found");
+            }
         }
         public List<string> GetAaInstalledComponents(string _version, string _instance)
         {

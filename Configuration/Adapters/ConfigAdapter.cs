@@ -1,55 +1,64 @@
 ﻿using System;
 using System.IO;
-using rydavidson.Accela.Common;
 using rydavidson.Accela.Configuration.Common;
 using rydavidson.Accela.Configuration.IO;
-using rydavidson.Accela.Configuration.Models;
+using rydavidson.Accela.Configuration.ConfigModels;
+using rydavidson.Accela.Configuration.IO.Interfaces;
 
-namespace rydavidson.Accela.Configuration.Handlers
+namespace rydavidson.Accela.Configuration.Adapters
 {
-    public class ConfigHandler
+    public class ConfigAdapter
     {
-        // ConfigHandler exposes methods to deal with common functions needed for config files, such as retrieving and updating values
-
         public string PathToConfigFile { get; set; }
-        public string CurrentComponent { get; set; }
-        public string CurrentInstance { get; set; }
-        public string CurrentVersion { get; set; }
         public Logger Log { get; set; }
 
         // provide external messaging
 
-        public Action<string> MessageHandler; 
+        public Action<string> MessageHandler;
         public Action<string> ErrorMessageHandler;
 
         // private members
+        private enum MODE { dir, file };
 
         private bool isMessageHandlerRegistered = false;
         private bool isErrorMessageHandlerRegistered = false;
-        private readonly CommonConfig configs;
-        private ConfigWriter configWriter;
-        private ConfigReader configReader;
+
+        private IConfigWriter configWriter;
+        private IConfigReader configReader;
+
+        private MODE currentMode;
+
 
         #region constructors
 
-        public ConfigHandler(string _pathToConfigFile, string _component, string _version, string _instance, Logger _log)
+        public ConfigAdapter(string _pathToConfigFile, bool isDirectory)
         {
+            currentMode = MODE.file;
+            if (isDirectory)
+                currentMode = MODE.dir;
+
             //PathToConfigFile = _pathToConfigFile.Replace("\"","");
             PathToConfigFile = _pathToConfigFile;
-            CurrentComponent = _component;
-            CurrentVersion = _version;
-            CurrentInstance = _instance;
 
-            configWriter = new ConfigWriter(PathToConfigFile);
-            configReader = new ConfigReader(PathToConfigFile);
+            if (currentMode == MODE.file)
+            {
+                if (PathToConfigFile.Contains(".properties"))
+                {
+                    configWriter = new ConfigWriter(PathToConfigFile);
+                    configReader = new ConfigReader(PathToConfigFile);
+                }
+                if (PathToConfigFile.Contains(".xml"))
+                {
+                    configWriter = new XMLConfigWriter(PathToConfigFile);
+                    configReader = new XMLConfigReader(PathToConfigFile);
+                }
 
-            configs = CommonConfig.Instance;
-            Log = configs.Log;
-            if (_log != null)
-                Log = _log;
+            }
         }
 
         #endregion
+
+
 
         #region register delegates
 
@@ -87,8 +96,6 @@ namespace rydavidson.Accela.Configuration.Handlers
 
         public MssqlConfig ReadConfigFromFile()
         {
-
-
             return null;
         }
 
@@ -96,8 +103,6 @@ namespace rydavidson.Accela.Configuration.Handlers
         //{
 
         //}
-
-
 
         #endregion
 
@@ -110,11 +115,19 @@ namespace rydavidson.Accela.Configuration.Handlers
                 SendError("File not found: " + PathToConfigFile);
                 return;
             }
+            if (!PathToConfigFile.Contains(".properties"))
+            {
+                SendError("Incorrect file type. Provide a .properties file");
+                return;
+            }
 
             if (File.Exists(PathToConfigFile + ".backup"))
                 File.Delete(PathToConfigFile + ".backup");
 
             File.Copy(PathToConfigFile, PathToConfigFile + ".backup");
+
+            configWriter.WriteValueToConfig("aa.database", _mssql.DatabaseType);
+            configWriter.WriteValueToConfig("av.db", _mssql.DatabaseType);
 
             configWriter.WriteValueToConfig("av.db.host", _mssql.AvDbHost);
             configWriter.WriteValueToConfig("av.jetspeed.db.host", _mssql.AvDbHost);
@@ -134,6 +147,28 @@ namespace rydavidson.Accela.Configuration.Handlers
 
         #region getters and setters
 
+        public void SetConfigFile(string file, bool isRelativeToDir)
+        {
+            bool set = false;
+            if (isRelativeToDir)
+            {
+                if (File.Exists(PathToConfigFile + file))
+                    PathToConfigFile += file;
+            }
+            else
+            {
+                if (File.Exists(file))
+                    PathToConfigFile = file;
+            }
+            if (!set)
+            {
+                SendError($"Unable to set config file to {file}");
+            }
+            else
+            {
+                currentMode = MODE.file;
+            }
+        }
         #endregion
 
 

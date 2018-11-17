@@ -1,4 +1,5 @@
-﻿using rydavidson.Accela.Configuration.Models;
+﻿using rydavidson.Accela.Configuration.ConfigModels;
+using rydavidson.Accela.Configuration.IO.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace rydavidson.Accela.Configuration.IO
 {
-    public class ConfigReader
+    public class ConfigReader : IConfigReader
     {
         private string pathToConfigFile;
 
@@ -27,9 +28,8 @@ namespace rydavidson.Accela.Configuration.IO
             int indexEndOfValue = content.IndexOf(Environment.NewLine, indexOfKey);
             int indexOfEquals = content.IndexOf("=", indexOfKey);
             string value = content.Substring(indexOfEquals + 1, (indexEndOfValue - indexOfEquals) - 1);
-            return value;
+            return value.ToLower();
         }
-       
 
         public Dictionary<string, string> FindValues(List<string> _keys)
         {
@@ -41,10 +41,11 @@ namespace rydavidson.Accela.Configuration.IO
             return configPairs;
         }
 
-        public MssqlConfig ReadFromConfigFile()
+        public IAccelaConfig Load()
         {
-            MssqlConfig sql = new MssqlConfig
+            AVServerConfig config = new AVServerConfig
             {
+                DatabaseType = FindValue("av.db"),
                 AvDbHost = FindValue("av.db.host"),
                 AvDbName = FindValue("av.db.sid"),
                 AvComponent = "av." + FindValue("av.server"),
@@ -53,9 +54,13 @@ namespace rydavidson.Accela.Configuration.IO
                 AvJetspeedUser = FindValue("av.jetspeed.db.user"),
                 Port = FindValue("av.db.port")
             };
-            sql.SetAvDatabasePassword(FindValue("av.db.password"));
-            sql.SetJetspeedDatabasePassword(FindValue("av.jetspeed.db.password"));
-            return sql;
+            config.SetAvDatabasePassword(FindValue("av.db.password"));
+            config.SetJetspeedDatabasePassword(FindValue("av.jetspeed.db.password"));
+
+            if (config.DatabaseType == "mssql")
+                return config as MssqlConfig;
+
+            return config as OracleConfig;
         }
     }
 }

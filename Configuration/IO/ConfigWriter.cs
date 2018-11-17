@@ -1,4 +1,5 @@
-﻿using System;
+﻿using rydavidson.Accela.Configuration.IO.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace rydavidson.Accela.Configuration.IO
 {
-    class ConfigWriter
+    class ConfigWriter :  IConfigWriter
     {
         private string pathToConfigFile;
 
