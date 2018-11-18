@@ -7,6 +7,9 @@ using rydavidson.Accela.Configuration.IO.Interfaces;
 
 namespace rydavidson.Accela.Configuration.Adapters
 {
+    /// <summary>
+    /// Provides an interface that manages a single supported configuration file
+    /// </summary>
     public class ConfigAdapter
     {
         public string PathToConfigFile { get; set; }
@@ -20,6 +23,8 @@ namespace rydavidson.Accela.Configuration.Adapters
         // private members
         private enum MODE { dir, file };
 
+        public enum COMPONENT { biz, cfmx, indexer, web }
+
         private bool isMessageHandlerRegistered = false;
         private bool isErrorMessageHandlerRegistered = false;
 
@@ -31,7 +36,16 @@ namespace rydavidson.Accela.Configuration.Adapters
 
         #region constructors
 
-        public ConfigAdapter(string _pathToConfigFile, bool isDirectory)
+        /// <summary>
+        /// Construct a ConfigAdapter
+        /// </summary>
+        /// <param name="_pathToConfigFile">
+        /// The path to the config file this ConfigAdapter should manage
+        /// </param>
+        /// <param name="isDirectory">
+        /// Sets if the provided path is an overall directory, or a specific file. Defaults to false
+        /// </param>
+        public ConfigAdapter(string _pathToConfigFile, bool isDirectory = false)
         {
             currentMode = MODE.file;
             if (isDirectory)
@@ -53,6 +67,10 @@ namespace rydavidson.Accela.Configuration.Adapters
                     configReader = new XMLConfigReader(PathToConfigFile);
                 }
 
+            }
+            else
+            {
+                throw new NotImplementedException("isDirectory option not implimented");
             }
         }
 
@@ -146,6 +164,11 @@ namespace rydavidson.Accela.Configuration.Adapters
         #endregion
 
         #region getters and setters
+
+        public void GetSupportedConfigFiles()
+        {
+
+        }
 
         public void SetConfigFile(string file, bool isRelativeToDir)
         {
